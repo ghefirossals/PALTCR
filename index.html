@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personnel Ability List TCR - Form GMF/Q-364 R1</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display", "SF Pro", sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            overflow-y: auto;
+        }
+
+        .auth-wrapper {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            width: 100%;
+            padding: 20px;
+        }
+
+        .container {
+            position: relative;
+            overflow: hidden;
+            background-color: #ffffff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            margin: 0 auto;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, #004b73 0%, #115c44 100%);
+        }
+
+        h1 { color: #1a202c; font-size: 24px; font-weight: 700; margin-bottom: 2px; }
+        .subtitle { color: #718096; font-size: 14px; font-weight: 500; margin-bottom: 28px; }
+        .date-display { font-size: 13px; font-weight: 500; color: #718096; margin-top: 14px; text-align: center; }
+
+        .form-group { text-align: left; margin-bottom: 16px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; color: #4a5568; margin-bottom: 6px; }
+        .form-group input { width: 100%; padding: 12px; font-size: 14px; background-color: #ebf3fe; border: 1px solid #d3e3f8; border-radius: 8px; outline: none; }
+        .password-wrapper { position: relative; display: flex; align-items: center; }
+        .password-wrapper input { padding-right: 42px; }
+
+        .toggle-password {
+            position: absolute;
+            right: 12px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #718096;
+            transition: color 0.2s ease;
+        }
+        .toggle-password:hover { color: #1a202c; }
+
+        .btn-group { display: flex; flex-direction: column; gap: 12px; margin-top: 20px; }
+
+        .btn {
+            display: block;
+            width: 100%;
+            padding: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+        }
+        .btn-primary { background: linear-gradient(90deg, #004b73 0%, #115c44 100%); color: #ffffff; }
+        .btn-secondary { background-color: #ebf3fe; color: #004b73; }
+
+        .btn-primary:hover {
+            filter: brightness(0.85);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .btn-secondary:hover {
+            background-color: #dbe7f9;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .btn:active {
+            transform: scale(0.98) !important;
+            filter: brightness(0.75) !important;
+        }
+
+        .btn-back {
+            background: none;
+            color: #718096;
+            font-size: 13px;
+            cursor: pointer;
+            border: none;
+            margin-top: 14px;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+        .btn-back:hover { color: #1a202c; text-decoration: underline; }
+        .btn-back:active { transform: scale(0.95); }
+
+        .info-box { margin-top: 24px; font-size: 12px; color: #a0aec0; line-height: 1.5; }
+
+        .hidden { display: none !important; }
+
+        #view-dashboard, #view-personnel-list, #view-personnel-detail { width: 100%; }
+
+        .navbar-top {
+            position: sticky; top: 0; z-index: 1000; width: 100%;
+            background: linear-gradient(90deg, #004b73 0%, #115c44 100%);
+            color: #ffffff; padding: 14px 24px; display: flex;
+            align-items: center; justify-content: space-between;
+            gap: 15px; flex-wrap: wrap;
+        }
+
+        .navbar-left { display: flex; align-items: center; gap: 15px; }
+
+        .btn-logout-nav, .btn-back-nav, .btn-download-nav {
+            background-color: #ffffff; color: #004b73; border: none;
+            padding: 8px 16px; border-radius: 6px; font-size: 12px;
+            font-weight: 600; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-download-nav { background-color: #27ae60; color: #ffffff; }
+        .btn-logout-nav:hover, .btn-back-nav:hover { background-color: #ebf3fe; transform: translateY(-1px); }
+        .btn-download-nav:hover { background-color: #219653; transform: translateY(-1px); }
+        .btn-logout-nav:active, .btn-back-nav:active, .btn-download-nav:active { transform: scale(0.95); }
+        .btn-download-nav:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+        .search-nav-input {
+            padding: 8px 14px; font-size: 13px; border-radius: 20px;
+            border: none; outline: none; min-width: 220px;
+            background-color: rgba(255, 255, 255, 0.9);
+            color: #333; transition: all 0.2s ease;
+        }
+        .search-nav-input:focus { background-color: #ffffff; box-shadow: 0 0 8px rgba(255,255,255,0.5); }
+
+        .cards-container {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 28px; padding: 40px 24px; max-width: 1100px; margin: 20px auto 40px auto;
+        }
+
+        .tcr-card {
+            background-color: #ffffff;
+            border-radius: 14px;
+            padding: 32px 24px;
+            box-shadow: 0 4px 18px rgba(0,0,0,0.06);
+            border: 1px solid #e2e8f0;
+            text-align: center;
+            transition: transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .tcr-card:hover { transform: translateY(-6px); box-shadow: 0 12px 25px rgba(0,0,0,0.12); }
+
+        .tcr-title { font-size: 22px; font-weight: 700; color: #004b73; margin-bottom: 10px; }
+        .tcr-subtitle { font-size: 13px; font-weight: 600; color: #718096; margin-bottom: 28px; }
+
+        .btn-card-action {
+            background: linear-gradient(90deg, #004b73 0%, #115c44 100%);
+            color: #ffffff; border: none; padding: 12px 20px;
+            font-size: 13px; font-weight: 600; border-radius: 8px;
+            cursor: pointer; width: 100%; transition: all 0.2s ease-in-out;
+        }
+
+        .btn-card-action:hover { filter: brightness(0.85); box-shadow: 0 4px 10px rgba(0,0,0,0.15); }
+        .btn-card-action:active { transform: scale(0.97); filter: brightness(0.75); }
+
+        .personnel-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 20px; padding: 30px 24px; max-width: 1200px; margin: 0 auto;
+        }
+
+        .person-card {
+            background-color: #ffffff; border-radius: 12px; padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05); border: 1px solid #e2e8f0;
+            text-align: center; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .person-card:hover { transform: translateY(-5px); box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1); }
+
+        .avatar {
+            width: 80px; height: 80px; border-radius: 50%; object-fit: cover;
+            margin: 0 auto 12px auto; border: 3px solid #ebf3fe; background-color: #e2e8f0;
+        }
+
+        .person-name { font-size: 15px; font-weight: 700; color: #1a202c; margin-bottom: 4px; }
+        .person-id { font-size: 12px; font-weight: 600; color: #004b73; background-color: #ebf3fe; display: inline-block; padding: 2px 8px; border-radius: 4px; margin-bottom: 8px; }
+        .person-role { font-size: 12px; color: #718096; }
+
+        .profile-container { max-width: 1100px; margin: 30px auto; padding: 0 24px; }
+        .profile-header-card {
+            background: #ffffff; border-radius: 12px; padding: 24px;
+            display: flex; align-items: center; gap: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0; margin-bottom: 24px;
+        }
+        .profile-header-avatar { width: 90px; height: 90px; border-radius: 50%; object-fit: cover; border: 3px solid #004b73; }
+        .profile-header-info h2 { font-size: 22px; color: #1a202c; margin-bottom: 4px; }
+        .profile-header-info p { font-size: 14px; color: #718096; margin-bottom: 4px; }
+
+        .pal-table-wrapper {
+            background: #ffffff; border-radius: 12px; padding: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
+        }
+        .pal-search-box { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid #cbd5e0; border-radius: 8px; margin-bottom: 20px; outline: none; }
+
+        .web-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 14px; }
+        .web-table th { background-color: #ebf3fe; color: #004b73; padding: 12px; border-bottom: 2px solid #cbd5e0; }
+        .web-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #2d3748; }
+        .web-table tr:hover { background-color: #f7fafc; }
+
+        /* ====== TEMPLATE HALAMAN UNTUK PEMBUATAN PDF (html2pdf) ====== */
+        /* Elemen ini dibuat & dihapus otomatis lewat JavaScript saat tombol
+           "Download PDF" ditekan. Diposisikan di luar layar (bukan display:none)
+           supaya bisa "difoto" oleh html2canvas untuk dijadikan halaman PDF. */
+        .pdf-page {
+            position: fixed;
+            left: -99999px;
+            top: 0;
+            width: 210mm;
+            min-height: 297mm;
+            background: #ffffff;
+            padding: 12mm 10mm;
+            box-sizing: border-box;
+            font-family: Arial, Helvetica, sans-serif;
+            color: #000;
+        }
+        .pdf-header { text-align: center; border-bottom: 1.5px solid #000; padding-bottom: 8px; margin-bottom: 10px; }
+        .pdf-logo { max-width: 9.5cm; width: auto; height: auto; display: block; margin: 0 auto 6px auto; object-fit: contain; }
+        .pdf-title { font-size: 12pt; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        .pdf-person-grid { width: 100%; margin-bottom: 10px; font-size: 10pt; border-collapse: collapse; }
+        .pdf-person-grid td { padding: 2px 4px; vertical-align: top; }
+        .pdf-person-grid td.lbl { font-weight: bold; width: 135px; }
+
+        .pdf-pal-table { width: 100%; border-collapse: collapse; font-size: 9pt; margin-bottom: 12px; }
+        .pdf-pal-table th, .pdf-pal-table td { border: 1.2px solid #000; padding: 4px; word-wrap: break-word; }
+        .pdf-pal-table th { background-color: #ffffff; text-align: center; font-weight: bold; text-transform: uppercase; }
+
+        .col-no { width: 35px; text-align: center; }
+        .col-desc { text-align: left; }
+        .col-pn { width: 180px; text-align: left; }
+        .col-ata { width: 90px; text-align: center; white-space: nowrap; }
+        .col-auth { width: 150px; text-align: center; }
+
+        .pdf-footer-table { width: 100%; border-collapse: collapse; font-size: 9pt; border: 1px solid #000; }
+        .pdf-footer-table td { border: 1px solid #000; padding: 6px 10px; vertical-align: top; box-sizing: border-box; }
+        .ft-col-date { width: 15%; }
+        .ft-col-approval { width: 70%; text-align: center; }
+        .ft-col-page { width: 15%; text-align: right; vertical-align: middle !important; }
+        .pdf-formno { font-size: 9pt; font-weight: bold; margin-top: 4px; text-align: left; }
+
+        @media (max-width: 900px) { .cards-container { grid-template-columns: repeat(2, 1fr); } }
+        @media (max-width: 600px) {
+            .cards-container { grid-template-columns: 1fr; }
+            .profile-header-card { flex-direction: column; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HALAMAN LOGIN / UTAMA -->
+    <div id="auth-section" class="auth-wrapper">
+        <div class="container">
+            <div id="view-home">
+                <h1>Personnel Ability List TCR</h1>
+                <p class="subtitle">CI 584461</p>
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary" onclick="bukaHalamanLogin()">Login</button>
+                    <button type="button" class="btn btn-secondary" onclick="aksesTamu()">Masuk Tanpa Akun</button>
+                </div>
+                <div class="info-box">
+                    <p>* <strong>Login:</strong> Untuk akses penuh.</p>
+                    <p>* <strong>Tanpa Akun:</strong> Untuk akses terbatas.</p>
+                </div>
+            </div>
+
+            <div id="view-login" class="hidden">
+                <h1>Personnel Ability List TCR</h1>
+                <p class="subtitle">Please enter your name and password to log in.</p>
+                <form onsubmit="prosesLogin(event)">
+                    <div class="form-group">
+                        <label for="userId">ID / Nama User</label>
+                        <input type="text" id="userId" placeholder="Masukkan ID Anda" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="userPassword">Password</label>
+                        <div class="password-wrapper">
+                            <input type="password" id="userPassword" placeholder="Masukkan Password" required>
+                            <button type="button" class="toggle-password" onclick="togglePasswordVisibility()">
+                                <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button type="submit" class="btn btn-primary">Login</button>
+                    </div>
+                </form>
+                <button type="button" class="btn-back" onclick="bukaHalamanUtama()">← Kembali ke Halaman Utama</button>
+            </div>
+        </div>
+        <div id="current-date" class="date-display"></div>
+    </div>
+
+    <!-- DASHBOARD UTAMA -->
+    <div id="view-dashboard" class="hidden">
+        <header class="navbar-top">
+            <div><span style="font-weight: bold; font-size: 18px;">Personnel Ability List TCR</span></div>
+            <div><button type="button" class="btn-logout-nav" onclick="bukaHalamanUtama()">Keluar</button></div>
+        </header>
+
+        <div class="cards-container">
+            <div class="tcr-card">
+                <div class="tcr-title">TCR 1</div>
+                <div class="tcr-subtitle">SHEETMETAL, ULD & MEAL TROLLEY</div>
+                <button type="button" class="btn-card-action" onclick="bukaTCR(1)">Buka Halaman</button>
+            </div>
+            <div class="tcr-card">
+                <div class="tcr-title">TCR 2</div>
+                <div class="tcr-subtitle">COMPOSITE</div>
+                <button type="button" class="btn-card-action" onclick="bukaTCR(2)">Buka Halaman</button>
+            </div>
+            <div class="tcr-card">
+                <div class="tcr-title">TCR 3</div>
+                <div class="tcr-subtitle">CABIN SEAT</div>
+                <button type="button" class="btn-card-action" onclick="bukaTCR(3)">Buka Halaman</button>
+            </div>
+            <div class="tcr-card">
+                <div class="tcr-title">TCR 4</div>
+                <div class="tcr-subtitle">CABIN MONUMENT</div>
+                <button type="button" class="btn-card-action" onclick="bukaTCR(4)">Buka Halaman</button>
+            </div>
+            <div class="tcr-card">
+                <div class="tcr-title">TCR 5</div>
+                <div class="tcr-subtitle">MACHINING</div>
+                <button type="button" class="btn-card-action" onclick="bukaTCR(5)">Buka Halaman</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- LIST PERSONIL -->
+    <div id="view-personnel-list" class="hidden">
+        <header class="navbar-top">
+            <div class="navbar-left">
+                <button type="button" class="btn-back-nav" onclick="kembaliKeDashboard()">← Dashboard</button>
+                <span id="tcr-page-title" style="font-weight: bold; font-size: 18px;">Daftar Personil</span>
+            </div>
+            <div>
+                <input type="text" id="search-personnel" class="search-nav-input" placeholder="Cari Nama / ID..." onkeyup="filterPersonil()">
+            </div>
+        </header>
+
+        <div id="personnel-container" class="personnel-grid"></div>
+    </div>
+
+    <!-- DETAIL PERSONIL (WEB VIEW) -->
+    <div id="view-personnel-detail" class="hidden">
+        <header class="navbar-top">
+            <div class="navbar-left">
+                <button type="button" class="btn-back-nav" onclick="kembaliKeDaftarPersonil()">← Kembali</button>
+                <span style="font-weight: bold; font-size: 18px;">Personal Ability List</span>
+            </div>
+            <div>
+                <button type="button" class="btn-download-nav" onclick="downloadPDF()">Download PDF</button>
+            </div>
+        </header>
+
+        <div class="profile-container">
+            <div class="profile-header-card">
+                <img id="detail-foto" src="" alt="Foto" class="profile-header-avatar" onerror="this.src='https://via.placeholder.com/90'">
+                <div class="profile-header-info">
+                    <h2 id="detail-nama">-</h2>
+                    <p><strong>Personnel ID:</strong> <span id="detail-id">-</span></p>
+                    <p><strong>Present Title:</strong> <span id="detail-jabatan">-</span></p>
+                </div>
+            </div>
+
+            <div class="pal-table-wrapper">
+                <input type="text" id="search-pal" class="pal-search-box" placeholder="Cari Part Number atau Deskripsi..." onkeyup="filterPAL()">
+                <div style="overflow-x: auto;">
+                    <table class="web-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px; text-align: center;">NO</th>
+                                <th>DESCRIPTION</th>
+                                <th>PART NUMBER</th>
+                                <th>ATA</th>
+                                <th>RELATED AUTHORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pal-table-body">
+                            <!-- Data PAL diisi via JavaScript -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // GANTI link ini kapan pun kamu perbarui Google Apps Script-nya
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmJqKaIZ3AWLss1Ee9uCQ6BY8RIG9Gbg32BURKASucz6mCHFatldEfqrdYO-aWEPqq/exec";
+
+        // Jumlah baris PAL per halaman PDF. Kalau tabel di PDF terlihat
+        // kepenuhan (baris kepotong), kecilkan angka ini. Kalau terlalu
+        // longgar/kosong di bawah, besarkan angka ini.
+        const ROWS_PER_PAGE_PDF = 25;
+
+        let activePersonnelData = [];
+        let activePALData = [];
+        let selectedPerson = null;
+        let currentTCRNumber = 1;
+
+        function aksesTamu() {
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+            document.getElementById('view-personnel-list').classList.add('hidden');
+            document.getElementById('view-personnel-detail').classList.add('hidden');
+        }
+
+        function bukaHalamanUtama() {
+            document.getElementById('auth-section').classList.remove('hidden');
+            document.getElementById('view-home').classList.remove('hidden');
+            document.getElementById('view-login').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-personnel-list').classList.add('hidden');
+            document.getElementById('view-personnel-detail').classList.add('hidden');
+        }
+
+        function bukaHalamanLogin() {
+            document.getElementById('view-home').classList.add('hidden');
+            document.getElementById('view-login').classList.remove('hidden');
+        }
+
+        function kembaliKeDashboard() {
+            document.getElementById('view-personnel-list').classList.add('hidden');
+            document.getElementById('view-personnel-detail').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.remove('hidden');
+        }
+
+        function kembaliKeDaftarPersonil() {
+            document.getElementById('view-personnel-detail').classList.add('hidden');
+            document.getElementById('view-personnel-list').classList.remove('hidden');
+        }
+
+        function bukaTCR(nomorTCR) {
+            currentTCRNumber = nomorTCR;
+            const sheetName = "TCR" + nomorTCR;
+
+            document.getElementById('auth-section').classList.add('hidden');
+            document.getElementById('view-dashboard').classList.add('hidden');
+            document.getElementById('view-personnel-detail').classList.add('hidden');
+            document.getElementById('view-personnel-list').classList.remove('hidden');
+            document.getElementById('tcr-page-title').innerText = "Daftar Personil TCR " + nomorTCR;
+            document.getElementById('search-personnel').value = '';
+
+            const container = document.getElementById('personnel-container');
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #718096;">Memuat data dari Google Sheets...</p>';
+
+            fetch(`${SCRIPT_URL}?sheet=${sheetName}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (!data || data.length === 0 || data.error) {
+                        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #e53e3e;">Data tidak ditemukan pada Sheet.</p>';
+                        return;
+                    }
+                    activePersonnelData = data;
+                    renderPersonil(data);
+                })
+                .catch(error => {
+                    console.error("Error:", error);
+                    container.innerHTML = '<p style="text-align:center; color:#e53e3e; grid-column: 1/-1; padding: 40px;">Gagal mengambil data dari Spreadsheet.</p>';
+                });
+        }
+
+        function renderPersonil(dataList) {
+            const container = document.getElementById('personnel-container');
+            container.innerHTML = '';
+
+            if (dataList.length === 0) {
+                container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #718096;">Personil tidak ditemukan.</p>';
+                return;
+            }
+
+            dataList.forEach(person => {
+                const nama = person.nama || "Tanpa Nama";
+                const id = person.id || "-";
+                const jabatan = person.jabatan || "-";
+                const foto = person.foto || person.photo || "https://via.placeholder.com/80";
+
+                const cardHtml = `
+                    <div class="person-card" onclick="bukaDetailPersonil('${id}')">
+                        <img src="${foto}" alt="${nama}" class="avatar" onerror="this.src='https://via.placeholder.com/80'">
+                        <div class="person-name">${nama}</div>
+                        <div class="person-id">ID: ${id}</div>
+                        <div class="person-role">${jabatan}</div>
+                    </div>
+                `;
+                container.innerHTML += cardHtml;
+            });
+        }
+
+        function filterPersonil() {
+            const keyword = document.getElementById('search-personnel').value.toLowerCase();
+            const filtered = activePersonnelData.filter(p => {
+                const nama = (p.nama || "").toLowerCase();
+                const id = String(p.id || "").toLowerCase();
+                return nama.includes(keyword) || id.includes(keyword);
+            });
+            renderPersonil(filtered);
+        }
+
+        function bukaDetailPersonil(id) {
+            selectedPerson = activePersonnelData.find(p => String(p.id).trim() === String(id).trim()) || {
+                id: id, nama: "Personil", jabatan: "-"
+            };
+
+            document.getElementById('detail-nama').innerText = selectedPerson.nama || "-";
+            document.getElementById('detail-id').innerText = selectedPerson.id || "-";
+            document.getElementById('detail-jabatan').innerText = selectedPerson.jabatan || "-";
+            document.getElementById('detail-foto').src = selectedPerson.foto || selectedPerson.photo || "https://via.placeholder.com/90";
+            document.getElementById('search-pal').value = '';
+
+            document.getElementById('view-personnel-list').classList.add('hidden');
+            document.getElementById('view-personnel-detail').classList.remove('hidden');
+
+            const tbody = document.getElementById('pal-table-body');
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #718096;">Memuat daftar kemampuan (PAL)...</td></tr>';
+
+            fetch(`${SCRIPT_URL}?sheet=Data_PAL&id=${id}`)
+                .then(response => response.json())
+                .then(palData => {
+                    activePALData = Array.isArray(palData) ? palData : [];
+                    renderPALTable(activePALData);
+                })
+                .catch(err => {
+                    console.error("Error PAL:", err);
+                    tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #e53e3e;">Gagal memuat data PAL.</td></tr>';
+                });
+        }
+
+        function renderPALTable(dataList) {
+            const tbody = document.getElementById('pal-table-body');
+            tbody.innerHTML = '';
+
+            if (dataList.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 20px; color: #718096;">Belum ada daftar PAL untuk personil ini.</td></tr>';
+                return;
+            }
+
+            dataList.forEach((item, index) => {
+                const tr = `
+                    <tr>
+                        <td style="text-align: center;">${index + 1}</td>
+                        <td>${item.description || "-"}</td>
+                        <td><strong>${item.part_number || "-"}</strong></td>
+                        <td>${item.ata || "-"}</td>
+                        <td>${item.related_auth || "-"}</td>
+                    </tr>
+                `;
+                tbody.innerHTML += tr;
+            });
+        }
+
+        function filterPAL() {
+            const keyword = document.getElementById('search-pal').value.toLowerCase();
+            const filtered = activePALData.filter(item => {
+                const desc = (item.description || "").toLowerCase();
+                const pn = (item.part_number || "").toLowerCase();
+                const ata = (item.ata || "").toLowerCase();
+                return desc.includes(keyword) || pn.includes(keyword) || ata.includes(keyword);
+            });
+            renderPALTable(filtered);
+        }
+
+        /* ==========================================================
+           DOWNLOAD PDF — dibangun ulang pakai html2pdf.js
+           Kenapa? Browser TIDAK bisa menghitung nomor halaman otomatis
+           saat print biasa (itu sebabnya sebelumnya selalu muncul
+           "Page 0" dan ada halaman kosong berlebih). Dengan cara ini,
+           setiap halaman PDF dibangun manual per-25 baris (bisa diubah
+           lewat ROWS_PER_PAGE_PDF di atas), jadi nomor halaman dan
+           jumlah halaman totalnya pasti akurat, dan tidak ada halaman
+           kosong tersisa di akhir.
+           ========================================================== */
+        function downloadPDF() {
+            if (!selectedPerson) return;
+
+            const btn = document.querySelector('.btn-download-nav');
+            const teksAsli = btn.innerText;
+            btn.innerText = 'Memproses...';
+            btn.disabled = true;
+
+            const dataList = activePALData || [];
+            const totalPages = Math.max(1, Math.ceil(dataList.length / ROWS_PER_PAGE_PDF));
+
+            const hariIni = new Date();
+            const opsiTanggal = { day: '2-digit', month: 'short', year: 'numeric' };
+            const tanggalCetak = hariIni.toLocaleDateString('en-GB', opsiTanggal);
+
+            const container = document.createElement('div');
+            container.id = 'pdf-render-container';
+
+            for (let page = 0; page < totalPages; page++) {
+                const chunk = dataList.slice(page * ROWS_PER_PAGE_PDF, (page + 1) * ROWS_PER_PAGE_PDF);
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'pdf-page';
+                if (page > 0) pageDiv.style.pageBreakBefore = 'always';
+
+                let rowsHtml = '';
+                if (chunk.length === 0) {
+                    rowsHtml = '<tr><td colspan="5" style="text-align:center; padding:10px;">Tidak ada data PAL</td></tr>';
+                } else {
+                    chunk.forEach((item, idx) => {
+                        const nomorUrut = page * ROWS_PER_PAGE_PDF + idx + 1;
+                        rowsHtml += `
+                            <tr>
+                                <td class="col-no">${nomorUrut}</td>
+                                <td class="col-desc">${item.description || "-"}</td>
+                                <td class="col-pn">${item.part_number || "-"}</td>
+                                <td class="col-ata">${item.ata || "-"}</td>
+                                <td class="col-auth">${item.related_auth || "-"}</td>
+                            </tr>
+                        `;
+                    });
+                }
+
+                pageDiv.innerHTML = `
+                    <div class="pdf-header">
+                        <img src="https://lh3.googleusercontent.com/d/1xvTXFYJR1e6Nm8Cl2sktf8s63gq5xj1I" alt="GMFAeroAsia Logo" class="pdf-logo" crossorigin="anonymous">
+                        <div class="pdf-title">PERSONNEL ABILITY LIST</div>
+                    </div>
+                    <table class="pdf-person-grid">
+                        <tr><td class="lbl">Name</td><td style="width:10px;">:</td><td>${selectedPerson.nama || "-"}</td></tr>
+                        <tr><td class="lbl">Personnel Number</td><td>:</td><td>${selectedPerson.id || "-"}</td></tr>
+                        <tr><td class="lbl">Present Title</td><td>:</td><td>${selectedPerson.jabatan || "-"}</td></tr>
+                    </table>
+                    <table class="pdf-pal-table">
+                        <thead>
+                            <tr>
+                                <th class="col-no">NO</th>
+                                <th class="col-desc">DESCRIPTION</th>
+                                <th class="col-pn">PART NUMBER</th>
+                                <th class="col-ata">ATA</th>
+                                <th class="col-auth">RELATED AUTHORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody>${rowsHtml}</tbody>
+                    </table>
+                    <table class="pdf-footer-table">
+                        <tr>
+                            <td class="ft-col-date"><strong>Date:</strong><br>${tanggalCetak}</td>
+                            <td class="ft-col-approval">
+                                <strong>Approved by Structure & Cabin Workshop Division Head</strong>
+                                <div style="font-size:10pt; color:#555; margin-top:22px;">ANDRYAN PUTRA</div>
+                            </td>
+                            <td class="ft-col-page">Page ${page + 1} / ${totalPages}</td>
+                        </tr>
+                    </table>
+                    <div class="pdf-formno">Form No.: GMF/Q-364 R1</div>
+                `;
+                container.appendChild(pageDiv);
+            }
+
+            document.body.appendChild(container);
+
+            const namaFile = `PAL_${(selectedPerson.nama || 'Personil').replace(/\s+/g, '_')}_${selectedPerson.id || ''}.pdf`;
+
+            const opt = {
+                margin: 0,
+                filename: namaFile,
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 2, useCORS: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+                pagebreak: { mode: ['css'] }
+            };
+
+            html2pdf().set(opt).from(container).save()
+                .then(() => {
+                    document.body.removeChild(container);
+                    btn.innerText = teksAsli;
+                    btn.disabled = false;
+                })
+                .catch((err) => {
+                    console.error("Gagal membuat PDF:", err);
+                    document.body.removeChild(container);
+                    btn.innerText = teksAsli;
+                    btn.disabled = false;
+                    alert('Gagal membuat PDF. Silakan coba lagi.');
+                });
+        }
+
+        function prosesLogin(event) {
+            event.preventDefault();
+            const id = document.getElementById('userId').value;
+            alert("Login berhasil untuk ID: " + id);
+        }
+
+        function togglePasswordVisibility() {
+            const passwordInput = document.getElementById('userPassword');
+            const eyeIcon = document.getElementById('eye-icon');
+
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerHTML = `
+                    <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                `;
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerHTML = `
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                    <circle cx="12" cy="12" r="3"></circle>
+                `;
+            }
+        }
+
+        function updateTanggal() {
+            const opsi = { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' };
+            const hariIni = new Date().toLocaleDateString('id-ID', opsi);
+            const dateElem = document.getElementById('current-date');
+            if (dateElem) dateElem.innerText = hariIni;
+        }
+
+        updateTanggal();
+    </script>
+</body>
+</html>
