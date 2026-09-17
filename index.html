@@ -235,10 +235,12 @@
         /* Elemen ini dibuat & dihapus otomatis lewat JavaScript saat tombol
            "Download PDF" ditekan. Diposisikan di luar layar (bukan display:none)
            supaya bisa "difoto" oleh html2canvas untuk dijadikan halaman PDF. */
-        .pdf-page {
-            position: fixed;
-            left: -99999px;
+        #pdf-render-container {
+            position: absolute;
             top: 0;
+            left: -9999px;
+        }
+        .pdf-page {
             width: 210mm;
             min-height: 297mm;
             background: #ffffff;
