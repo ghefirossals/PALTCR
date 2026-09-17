@@ -613,13 +613,13 @@
             document.getElementById('search-personnel').value = '';
             
             const container = document.getElementById('personnel-container');
-            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #718096;">Memuat data dari Google Sheets...</p>';
+            container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #718096;">Memuat data...</p>';
 
             fetch(`${SCRIPT_URL}?sheet=${sheetName}`)
                 .then(response => response.json())
                 .then(data => {
                     if (!data || data.length === 0 || data.error) {
-                        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #e53e3e;">Data tidak ditemukan pada Sheet.</p>';
+                        container.innerHTML = '<p style="text-align:center; grid-column: 1/-1; padding: 40px; color: #e53e3e;">Data tidak ditemukan.</p>';
                         return;
                     }
                     activePersonnelData = data;
@@ -627,7 +627,7 @@
                 })
                 .catch(error => {
                     console.error("Error:", error);
-                    container.innerHTML = '<p style="text-align:center; color:#e53e3e; grid-column: 1/-1; padding: 40px;">Gagal mengambil data dari Spreadsheet.</p>';
+                    container.innerHTML = '<p style="text-align:center; color:#e53e3e; grid-column: 1/-1; padding: 40px;">Gagal mengambil data.</p>';
                 });
         }
 
