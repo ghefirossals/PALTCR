@@ -236,9 +236,23 @@
            "Download PDF" ditekan. Diposisikan di luar layar (bukan display:none)
            supaya bisa "difoto" oleh html2canvas untuk dijadikan halaman PDF. */
         #pdf-render-container {
-            position: absolute;
+            position: fixed;
             top: 0;
-            left: -9999px;
+            left: 0;
+            z-index: 999999;
+            background: #ffffff;
+        }
+        #pdf-loading-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(255,255,255,0.97);
+            z-index: 9999999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #004b73;
         }
         .pdf-page {
             width: 210mm;
@@ -687,13 +701,18 @@
 
             document.body.appendChild(container);
 
+            const overlay = document.createElement('div');
+            overlay.id = 'pdf-loading-overlay';
+            overlay.innerText = 'Sedang membuat PDF, mohon tunggu...';
+            document.body.appendChild(overlay);
+
             const namaFile = `PAL_${(selectedPerson.nama || 'Personil').replace(/\s+/g, '_')}_${selectedPerson.id || ''}.pdf`;
 
             const opt = {
                 margin: 0,
                 filename: namaFile,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true },
+                html2canvas: { scale: 2, useCORS: true, windowWidth: container.scrollWidth, windowHeight: container.scrollHeight },
                 jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
                 pagebreak: { mode: ['css'] }
             };
@@ -701,12 +720,14 @@
             html2pdf().set(opt).from(container).save()
                 .then(() => {
                     document.body.removeChild(container);
+                    document.body.removeChild(overlay);
                     btn.innerText = teksAsli;
                     btn.disabled = false;
                 })
                 .catch((err) => {
                     console.error("Gagal membuat PDF:", err);
                     document.body.removeChild(container);
+                    document.body.removeChild(overlay);
                     btn.innerText = teksAsli;
                     btn.disabled = false;
                     alert('Gagal membuat PDF. Silakan coba lagi.');
