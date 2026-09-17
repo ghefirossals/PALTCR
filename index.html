@@ -251,7 +251,6 @@
             background-color: #f7fafc; 
         }
 
-        /* Alignment dan Lebar Kolom Tabel Web */
         .web-table th.col-no, .web-table td.col-no,
         .web-table th.col-ata, .web-table td.col-ata,
         .web-table th.col-auth, .web-table td.col-auth { 
@@ -269,10 +268,9 @@
         .web-table th.col-ata { width: 9%; white-space: nowrap; }
         .web-table th.col-auth { width: 14%; }
 
-        /* AREA KHUSUS CETAK PRINT PDF FORM GMF/Q-364 R1 (MULTI-PAGE FIX) */
         #printable-area { display: none; }
 
-@media print {
+        @media print {
             html, body {
                 background: #ffffff !important;
                 margin: 0 !important;
@@ -303,7 +301,7 @@
             }
 
             .print-page-block {
-                height: 287mm; /* Mengakomodasi margin tipis 0.4cm A4 */
+                height: 287mm;
                 display: flex !important;
                 flex-direction: column !important;
                 justify-content: space-between !important;
@@ -398,7 +396,6 @@
             .ft-col-approval { width: 56%; text-align: center; }
             .ft-col-page { width: 22%; text-align: center; vertical-align: middle !important; }
 
-            /* TINGGI AREA KHUSUS TANDA TANGAN */
             .signature-space {
                 height: 48px;
             }
@@ -466,8 +463,23 @@
     <!-- DASHBOARD UTAMA -->
     <div id="view-dashboard" class="hidden">
         <header class="navbar-top">
-            <div><span style="font-weight: bold; font-size: 18px;">Personnel Ability List TCR</span></div>
-            <div><button type="button" class="btn-logout-nav" onclick="bukaHalamanUtama()">Keluar</button></div>
+            <!-- SISI KIRI: Salam & Judul Navbar -->
+            <div style="display: flex; flex-direction: column; align-items: flex-start;">
+                <span id="user-greeting" style="font-size: 12px; opacity: 0.9; font-weight: 500;">Halo, Guest</span>
+                <span style="font-weight: bold; font-size: 15px;">Personnel Ability List TCR</span>
+            </div>
+
+            <!-- SISI TENGAH: Tombol Tambah Capability (Hanya muncul jika login) -->
+            <div id="btn-tambah-container" class="hidden">
+                <button type="button" class="btn-download-nav" onclick="bukaModalCapability()">
+                    + Tambah Capability Baru
+                </button>
+            </div>
+
+            <!-- SISI KANAN: Tombol Keluar -->
+            <div>
+                <button type="button" class="btn-logout-nav" onclick="bukaHalamanUtama()">Keluar</button>
+            </div>
         </header>
         
         <div class="cards-container">
@@ -558,6 +570,40 @@
         </div>
     </div>
 
+    <!-- MODAL FORM TAMBAH CAPABILITY -->
+    <div id="modal-capability" class="hidden" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 2000;">
+        <div style="background: white; padding: 25px; border-radius: 12px; width: 90%; max-width: 450px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+            <h3 style="margin-bottom: 15px; color: #004b73;">Tambah Capability Personil</h3>
+            <form onsubmit="simpanCapabilityBaru(event)">
+                <div class="form-group">
+                    <label for="cap-person-id">Personnel ID / No Pegawai</label>
+                    <input type="text" id="cap-person-id" placeholder="Contoh: 584461" required>
+                </div>
+                <div class="form-group">
+                    <label for="cap-desc">Description</label>
+                    <input type="text" id="cap-desc" placeholder="Contoh: Repair Sheetmetal" required>
+                </div>
+                <div class="form-group">
+                    <label for="cap-pn">Part Number</label>
+                    <input type="text" id="cap-pn" placeholder="Contoh: PN-12345" required>
+                </div>
+                <div class="form-group">
+                    <label for="cap-ata">ATA Chapter</label>
+                    <input type="text" id="cap-ata" placeholder="Contoh: 53" required>
+                </div>
+                <div class="form-group">
+                    <label for="cap-auth">Related Authority</label>
+                    <input type="text" id="cap-auth" placeholder="Contoh: DGCA / EASA" required>
+                </div>
+
+                <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
+                    <button type="button" class="btn btn-secondary" onclick="tutupModalCapability()" style="width: auto; padding: 10px 18px;">Batal</button>
+                    <button type="submit" class="btn btn-primary" style="width: auto; padding: 10px 18px;">Simpan ke Excel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- AREA CETAK FORM GMF/Q-364 R1 (GENERATED AUTOMATICALLY) -->
     <div id="printable-area"></div>
 
@@ -568,8 +614,13 @@
         let activePALData = [];
         let selectedPerson = null;
         let currentTCRNumber = 1;
+        let currentUser = null;
 
         function aksesTamu() {
+            currentUser = null;
+            document.getElementById('user-greeting').innerText = "Halo, Guest";
+            document.getElementById('btn-tambah-container').classList.add('hidden');
+
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
             document.getElementById('view-personnel-list').classList.add('hidden');
@@ -577,6 +628,7 @@
         }
 
         function bukaHalamanUtama() {
+            currentUser = null;
             document.getElementById('auth-section').classList.remove('hidden');
             document.getElementById('view-home').classList.remove('hidden');
             document.getElementById('view-login').classList.add('hidden');
@@ -731,14 +783,13 @@
             renderPALTable(filtered);
         }
 
-function downloadPDF() {
+        function downloadPDF() {
             if (!selectedPerson) return;
 
             const printableArea = document.getElementById('printable-area');
             printableArea.innerHTML = '';
 
             const dataList = activePALData || [];
-            // DIUBAH MENJADI 38 BARIS AGAR TABEL BENAR-BENAR RAPAT SAMPAI BAWAH
             const ROWS_PER_PAGE = 38; 
             const totalPages = Math.max(1, Math.ceil(dataList.length / ROWS_PER_PAGE));
 
@@ -818,7 +869,6 @@ function downloadPDF() {
                                 </td>
                                 <td class="ft-col-approval">
                                     <strong>Approved by Structure & Cabin Workshop Division Head</strong>
-                                    <!-- RUANG KOSONG TINGGI UNTUK TANDA TANGAN (50px) -->
                                     <div class="signature-space"></div>
                                     <div style="font-size: 9pt; font-weight: bold; color: #000;">ANDRYAN PUTRA</div>
                                 </td>
@@ -839,7 +889,7 @@ function downloadPDF() {
             }, 200);
         }
 
-        // KODE BARU (SUDAH TERINTEGRASI KE GOOGLE APPS SCRIPT):
+        // PROSES LOGIN DENGAN PENGATURAN USERNAME & NAMA
         async function prosesLogin(event) {
             event.preventDefault();
     
@@ -847,7 +897,6 @@ function downloadPDF() {
             const passwordInput = document.getElementById('userPassword').value;
 
             try {
-                // Mengirimkan request POST ke URL Web App Apps Script
                 const response = await fetch(SCRIPT_URL, {
                     method: "POST",
                     headers: {
@@ -863,18 +912,67 @@ function downloadPDF() {
                 const result = await response.json();
 
                 if (result.status === "success") {
-                    alert("Login Berhasil! Selamat datang, " + (result.user ? result.user.nama : idInput));
-            
-                    // Langsung alihkan tampilan ke Dashboard
+                    currentUser = result.user || { nama: idInput };
+                    const namaUser = currentUser.nama || idInput;
+
+                    alert("Login Berhasil! Selamat datang, " + namaUser);
+
+                    // Update Tampilan Navbar
+                    document.getElementById('user-greeting').innerText = "Halo, " + namaUser;
+                    document.getElementById('btn-tambah-container').classList.remove('hidden');
+
+                    // Alihkan tampilan ke Dashboard
                     document.getElementById('auth-section').classList.add('hidden');
                     document.getElementById('view-dashboard').classList.remove('hidden');
                 } else {
-                    // Tampilkan pesan kesalahan dari Google Sheets (misal: Password/ID salah)
                     alert(result.message || "Login gagal. Periksa kembali ID dan Password Anda.");
                 }
             } catch (error) {
                 console.error("Error Login:", error);
                 alert("Gagal terhubung ke server login. Pastikan koneksi internet stabil.");
+            }
+        }
+
+        // FUNGSI KONTROL MODAL TAMBAH CAPABILITY
+        function bukaModalCapability() {
+            document.getElementById('modal-capability').classList.remove('hidden');
+        }
+
+        function tutupModalCapability() {
+            document.getElementById('modal-capability').classList.add('hidden');
+        }
+
+        // SIMPAN CAPABILITY BARU KE GOOGLE SHEETS
+        async function simpanCapabilityBaru(event) {
+            event.preventDefault();
+
+            const payload = {
+                action: "add_capability",
+                personnel_id: document.getElementById('cap-person-id').value,
+                description: document.getElementById('cap-desc').value,
+                part_number: document.getElementById('cap-pn').value,
+                ata: document.getElementById('cap-ata').value,
+                related_auth: document.getElementById('cap-auth').value
+            };
+
+            try {
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                    body: JSON.stringify(payload)
+                });
+
+                const res = await response.json();
+                if (res.status === "success") {
+                    alert("Data Capability berhasil disinkronkan ke Google Sheets!");
+                    tutupModalCapability();
+                    event.target.reset();
+                } else {
+                    alert("Gagal menyimpan: " + (res.message || "Terjadi kesalahan."));
+                }
+            } catch (err) {
+                console.error("Error Sync:", err);
+                alert("Terjadi kesalahan koneksi saat mengirim data.");
             }
         }
 
