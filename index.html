@@ -134,19 +134,29 @@
             align-items: center; justify-content: space-between;
             gap: 15px; flex-wrap: wrap;
         }
-        
+
         .navbar-left { display: flex; align-items: center; gap: 15px; }
 
-        .btn-logout-nav, .btn-back-nav, .btn-download-nav {
+        .btn-logout-nav, .btn-back-nav, .btn-download-nav, .btn-add-cap-inline {
             background-color: #ffffff; color: #004b73; border: none;
             padding: 8px 16px; border-radius: 6px; font-size: 12px;
             font-weight: 600; cursor: pointer;
             transition: all 0.2s ease;
         }
         .btn-download-nav { background-color: #27ae60; color: #ffffff; }
+        .btn-add-cap-inline { 
+            background: linear-gradient(90deg, #004b73 0%, #115c44 100%); 
+            color: #ffffff; 
+            padding: 12px 18px; 
+            border-radius: 8px; 
+            font-size: 13px; 
+            white-space: nowrap;
+        }
+        
         .btn-logout-nav:hover, .btn-back-nav:hover { background-color: #ebf3fe; transform: translateY(-1px); }
         .btn-download-nav:hover { background-color: #219653; transform: translateY(-1px); }
-        .btn-logout-nav:active, .btn-back-nav:active, .btn-download-nav:active { transform: scale(0.95); }
+        .btn-add-cap-inline:hover { filter: brightness(0.9); transform: translateY(-1px); }
+        .btn-logout-nav:active, .btn-back-nav:active, .btn-download-nav:active, .btn-add-cap-inline:active { transform: scale(0.95); }
 
         .search-nav-input {
             padding: 8px 14px; font-size: 13px; border-radius: 20px;
@@ -221,8 +231,12 @@
             background: #ffffff; border-radius: 12px; padding: 24px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05); border: 1px solid #e2e8f0;
         }
-        .pal-search-box { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid #cbd5e0; border-radius: 8px; margin-bottom: 20px; outline: none; }
+        .pal-search-box { width: 100%; padding: 12px 16px; font-size: 14px; border: 1px solid #cbd5e0; border-radius: 8px; outline: none; }
         
+        .pal-action-bar {
+            display: flex; gap: 12px; align-items: center; margin-bottom: 20px;
+        }
+
         .web-table { 
             width: 100%; 
             table-layout: fixed; 
@@ -412,6 +426,8 @@
         @media (max-width: 600px) { 
             .cards-container { grid-template-columns: 1fr; } 
             .profile-header-card { flex-direction: column; text-align: center; }
+            .pal-action-bar { flex-direction: column; }
+            .btn-add-cap-inline { width: 100%; }
         }
     </style>
 </head>
@@ -463,20 +479,11 @@
     <!-- DASHBOARD UTAMA -->
     <div id="view-dashboard" class="hidden">
         <header class="navbar-top">
-            <!-- SISI KIRI: Salam & Judul Navbar -->
             <div style="display: flex; flex-direction: column; align-items: flex-start;">
                 <span id="user-greeting" style="font-size: 12px; opacity: 0.9; font-weight: 500;">Halo, Guest</span>
                 <span style="font-weight: bold; font-size: 15px;">Personnel Ability List TCR</span>
             </div>
 
-            <!-- SISI TENGAH: Tombol Tambah Capability (Hanya muncul jika login) -->
-            <div id="btn-tambah-container" class="hidden">
-                <button type="button" class="btn-download-nav" onclick="bukaModalCapability()">
-                    + Tambah Capability Baru
-                </button>
-            </div>
-
-            <!-- SISI KANAN: Tombol Keluar -->
             <div>
                 <button type="button" class="btn-logout-nav" onclick="bukaHalamanUtama()">Keluar</button>
             </div>
@@ -549,7 +556,14 @@
             </div>
 
             <div class="pal-table-wrapper">
-                <input type="text" id="search-pal" class="pal-search-box" placeholder="Cari Part Number atau Deskripsi..." onkeyup="filterPAL()">
+                <!-- ACTION BAR DENGAN SEARCH BOX & TOMBOL TAMBAH -->
+                <div class="pal-action-bar">
+                    <input type="text" id="search-pal" class="pal-search-box" placeholder="Cari Part Number atau Deskripsi..." onkeyup="filterPAL()">
+                    <button type="button" id="btn-add-capability" class="btn-add-cap-inline hidden" onclick="bukaModalCapability()">
+                        + Tambah Capability
+                    </button>
+                </div>
+
                 <div style="overflow-x: auto;">
                     <table class="web-table">
                         <thead>
@@ -577,7 +591,7 @@
             <form onsubmit="simpanCapabilityBaru(event)">
                 <div class="form-group">
                     <label for="cap-person-id">Personnel ID / No Pegawai</label>
-                    <input type="text" id="cap-person-id" placeholder="Contoh: 584461" required>
+                    <input type="text" id="cap-person-id" readonly style="background-color: #e2e8f0; cursor: not-allowed;">
                 </div>
                 <div class="form-group">
                     <label for="cap-desc">Description</label>
@@ -619,7 +633,7 @@
         function aksesTamu() {
             currentUser = null;
             document.getElementById('user-greeting').innerText = "Halo, Guest";
-            document.getElementById('btn-tambah-container').classList.add('hidden');
+            document.getElementById('btn-add-capability').classList.add('hidden');
 
             document.getElementById('auth-section').classList.add('hidden');
             document.getElementById('view-dashboard').classList.remove('hidden');
@@ -730,6 +744,13 @@
             document.getElementById('detail-jabatan').innerText = selectedPerson.jabatan || "-";
             document.getElementById('detail-foto').src = selectedPerson.foto || selectedPerson.photo || "https://via.placeholder.com/90";
             document.getElementById('search-pal').value = '';
+
+            // Tampilkan tombol Tambah Capability HANYA jika User Login
+            if (currentUser) {
+                document.getElementById('btn-add-capability').classList.remove('hidden');
+            } else {
+                document.getElementById('btn-add-capability').classList.add('hidden');
+            }
 
             document.getElementById('view-personnel-list').classList.add('hidden');
             document.getElementById('view-personnel-detail').classList.remove('hidden');
@@ -889,7 +910,7 @@
             }, 200);
         }
 
-        // PROSES LOGIN DENGAN PENGATURAN USERNAME & NAMA
+        // PROSES LOGIN TANPA POPUP ALERT
         async function prosesLogin(event) {
             event.preventDefault();
     
@@ -915,13 +936,10 @@
                     currentUser = result.user || { nama: idInput };
                     const namaUser = currentUser.nama || idInput;
 
-                    alert("Login Berhasil! Selamat datang, " + namaUser);
-
                     // Update Tampilan Navbar
                     document.getElementById('user-greeting').innerText = "Halo, " + namaUser;
-                    document.getElementById('btn-tambah-container').classList.remove('hidden');
 
-                    // Alihkan tampilan ke Dashboard
+                    // Alihkan langsung ke Dashboard tanpa alert
                     document.getElementById('auth-section').classList.add('hidden');
                     document.getElementById('view-dashboard').classList.remove('hidden');
                 } else {
@@ -935,6 +953,9 @@
 
         // FUNGSI KONTROL MODAL TAMBAH CAPABILITY
         function bukaModalCapability() {
+            if (selectedPerson) {
+                document.getElementById('cap-person-id').value = selectedPerson.id;
+            }
             document.getElementById('modal-capability').classList.remove('hidden');
         }
 
@@ -964,9 +985,13 @@
 
                 const res = await response.json();
                 if (res.status === "success") {
-                    alert("Data Capability berhasil disinkronkan ke Google Sheets!");
+                    alert("Data Capability berhasil ditambahkan!");
                     tutupModalCapability();
                     event.target.reset();
+                    // Refresh data PAL personil secara otomatis
+                    if (selectedPerson) {
+                        bukaDetailPersonil(selectedPerson.id);
+                    }
                 } else {
                     alert("Gagal menyimpan: " + (res.message || "Terjadi kesalahan."));
                 }
