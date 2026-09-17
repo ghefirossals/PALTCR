@@ -228,27 +228,31 @@
         .web-table td { padding: 12px; border-bottom: 1px solid #e2e8f0; color: #2d3748; }
         .web-table tr:hover { background-color: #f7fafc; }
 
-        /* AREA CETAK PRINT PDF FORM GMF/Q-364 R1 */
+        /* AREA KHUSUS CETAK PRINT PDF FORM GMF/Q-364 R1 (MULTI-PAGE FIX) */
         #printable-area { display: none; }
 
         @media print {
             html, body {
-                height: auto !important;
-                overflow: visible !important;
-                background: #fff !important;
+                background: #ffffff !important;
+                margin: 0 !important;
+                padding: 0 !important;
             }
 
-            body * { visibility: hidden; }
-            #printable-area, #printable-area * { visibility: visible; }
-            
+            body * {
+                visibility: hidden !important;
+            }
+
+            #printable-area, #printable-area * {
+                visibility: visible !important;
+            }
+
             #printable-area {
                 display: block !important;
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
-                color: #000;
-                font-family: Arial, Helvetica, sans-serif;
+                position: absolute !important;
+                left: 0 !important;
+                top: 0 !important;
+                width: 100% !important;
+                background: #ffffff !important;
             }
 
             @page { 
@@ -256,34 +260,31 @@
                 margin: 0.8cm;
             }
 
-            .print-outer-box {
-                padding: 0;
-                width: 100%;
+            .print-page-block {
+                page-break-after: always !important;
+                break-after: page !important;
                 box-sizing: border-box;
+                padding-bottom: 5px;
             }
 
-            .print-table-main {
-                width: 100%;
-                border-collapse: collapse;
+            .print-page-block:last-child {
+                page-break-after: avoid !important;
+                break-after: avoid !important;
             }
-
-            thead { display: table-header-group; }
-            tfoot { display: table-footer-group; }
 
             .print-header-layout {
                 text-align: center;
                 border-bottom: 1.5px solid #000;
-                padding-bottom: 8px;
+                padding-bottom: 6px;
+                margin-bottom: 8px;
                 width: 100%;
             }
 
             .print-header-logo {
-                max-width: 9.5cm;
-                width: auto;
+                max-width: 8cm;
                 height: auto;
                 display: block;
-                margin: 0 auto 6px auto;
-                object-fit: contain;
+                margin: 0 auto 4px auto;
             }
 
             .print-header-title {
@@ -295,18 +296,18 @@
 
             .print-person-grid {
                 width: 100%;
-                margin-top: 6px;
                 margin-bottom: 8px;
-                font-size: 10pt;
+                font-size: 9.5pt;
                 border-collapse: collapse;
             }
-            .print-person-grid td { padding: 1.5px 2px; vertical-align: top; }
+            .print-person-grid td { padding: 1px 2px; vertical-align: top; }
             .print-person-grid td.lbl { font-weight: bold; width: 135px; }
 
             .print-pal-table { 
                 width: 100%; 
                 border-collapse: collapse; 
-                font-size: 9.5pt; 
+                font-size: 9pt; 
+                margin-bottom: 12px;
             }
             .print-pal-table th, .print-pal-table td { 
                 border: 1px solid #000; 
@@ -319,15 +320,12 @@
                 font-weight: bold; 
                 text-transform: uppercase;
             }
-            .print-pal-table tr {
-                page-break-inside: avoid;
-            }
             
-            .col-no { width: 35px; text-align: center; }
+            .col-no { width: 30px; text-align: center; }
             .col-desc { text-align: left; }
-            .col-pn { width: 170px; text-align: left; }
-            .col-ata { width: 85px; text-align: center; white-space: nowrap !important; }
-            .col-auth { width: 140px; text-align: center; }
+            .col-pn { width: 160px; text-align: left; }
+            .col-ata { width: 70px; text-align: center; white-space: nowrap !important; }
+            .col-auth { width: 130px; text-align: center; }
 
             .print-footer-table {
                 width: 100%;
@@ -335,7 +333,7 @@
                 font-size: 9.5pt;
                 border: 1px solid #000;
                 background-color: #ffffff;
-                height: 65px;
+                margin-top: auto;
             }
                 
             .print-footer-table td {
@@ -345,12 +343,12 @@
                 box-sizing: border-box;
             }
 
-            .ft-col-date { width: 18%; }
-            .ft-col-approval { width: 64%; text-align: center; }
-            .ft-col-page { width: 18%; text-align: center; vertical-align: middle !important; }
+            .ft-col-date { width: 20%; }
+            .ft-col-approval { width: 60%; text-align: center; }
+            .ft-col-page { width: 20%; text-align: right; vertical-align: middle !important; }
 
             .print-external-form-no {
-                font-size: 9.5pt;
+                font-size: 9pt;
                 font-weight: bold;
                 margin-top: 4px;
                 text-align: left;
@@ -400,7 +398,7 @@
                         </div>
                     </div>
                     <div class="btn-group">
-                        <button type="submit" id="btn-login-submit" class="btn btn-primary">Login</button>
+                        <button type="submit" class="btn btn-primary">Login</button>
                     </div>
                 </form>
                 <button type="button" class="btn-back" onclick="bukaHalamanUtama()">← Kembali ke Halaman Utama</button>
@@ -504,99 +502,11 @@
         </div>
     </div>
 
-    <!-- AREA CETAK FORM GMF/Q-364 R1 -->
-    <div id="printable-area">
-        <div class="print-outer-box">
-            <table class="print-table-main">
-                <thead>
-                    <tr>
-                        <td>
-                            <div class="print-header-layout">
-                                <img src="https://lh3.googleusercontent.com/d/1xvTXFYJR1e6Nm8Cl2sktf8s63gq5xj1I" alt="GMFAeroAsia Logo" class="print-header-logo">
-                                <div class="print-header-title">PERSONNEL ABILITY LIST</div>
-                            </div>
-                        
-                            <table class="print-person-grid">
-                                <tr>
-                                    <td class="lbl">Name</td>
-                                    <td style="width: 10px;">:</td>
-                                    <td id="print-nama">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="lbl">Personnel Number</td>
-                                    <td>:</td>
-                                    <td id="print-id">-</td>
-                                </tr>
-                                <tr>
-                                    <td class="lbl">Present Title</td>
-                                    <td>:</td>
-                                    <td id="print-jabatan">-</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    <tr>
-                        <td>
-                            <table class="print-pal-table">
-                                <thead>
-                                    <tr>
-                                        <th class="col-no">NO</th>
-                                        <th class="col-desc">DESCRIPTION</th>
-                                        <th class="col-pn">PART NUMBER</th>
-                                        <th class="col-ata">ATA</th>
-                                        <th class="col-auth">RELATED AUTHORITY</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="print-pal-body">
-                                    <!-- Data PAL Cetak -->
-                                </tbody>
-                            </table>
-                        </td>
-                    </tr>
-                </tbody>
-
-                <tfoot>
-                    <tr>
-                        <td style="padding-top: 10px;">
-                            <table class="print-footer-table">
-                                <tr>
-                                    <td class="ft-col-date">
-                                        <strong>Date:</strong><br>
-                                        <span id="print-date">-</span>
-                                    </td>
-                                    <td class="ft-col-approval">
-                                        <div style="display: table; width: 100%; height: 100%;">
-                                            <div style="display: table-row;">
-                                                <div style="display: table-cell; vertical-align: top; text-align: center;">
-                                                    <strong>Approved by Structure & Cabin Workshop Division Head</strong>
-                                                </div>
-                                            </div>
-                                            <div style="display: table-row;">
-                                                <div style="display: table-cell; vertical-align: bottom; text-align: center; padding-bottom: 2px;">
-                                                    <span style="font-size: 9pt; color: #333; font-weight: bold;">ANDRYAN PUTRA</span>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td class="ft-col-page">
-                                        <span id="print-page-text">Page 1 of 1</span>
-                                    </td>
-                                </tr>
-                            </table>
-                            <div class="print-external-form-no">Form No.: GMF/Q-364 R1</div>
-                        </td>
-                    </tr>
-                </tfoot>
-            </table>
-        </div>
-    </div>
+    <!-- AREA CETAK FORM GMF/Q-364 R1 (GENERATED AUTOMATICALLY) -->
+    <div id="printable-area"></div>
 
     <script>
-        // URL Web App Apps Script Utama
-        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwmJqKaIZ3AWLss1Ee9uCQ6BY8RIG9Gbg32BURKASucz6mCHFatldEfqrdYO-aWEPqq/exec";
+        const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyggMH6lNMKlDnxgPmr-CTS-OGkziPEonAtgteQoKuOzMF2bRSBghLUWmJXmqGA22QP/exec";
         
         let activePersonnelData = [];
         let activePALData = [];
@@ -768,80 +678,109 @@
         function downloadPDF() {
             if (!selectedPerson) return;
 
-            document.getElementById('print-nama').innerText = selectedPerson.nama || "-";
-            document.getElementById('print-id').innerText = selectedPerson.id || "-";
-            document.getElementById('print-jabatan').innerText = selectedPerson.jabatan || "-";
+            const printableArea = document.getElementById('printable-area');
+            printableArea.innerHTML = '';
+
+            const dataList = activePALData || [];
+            // Maksimal 22 baris data per halaman agar pas secara presisi di kertas A4
+            const ROWS_PER_PAGE = 22; 
+            const totalPages = Math.max(1, Math.ceil(dataList.length / ROWS_PER_PAGE));
 
             const hariIni = new Date();
             const opsiTanggal = { day: '2-digit', month: 'short', year: 'numeric' };
-            document.getElementById('print-date').innerText = hariIni.toLocaleDateString('en-GB', opsiTanggal);
+            const tanggalCetak = hariIni.toLocaleDateString('en-GB', opsiTanggal);
 
-            const printTbody = document.getElementById('print-pal-body');
-            printTbody.innerHTML = '';
+            for (let page = 0; page < totalPages; page++) {
+                const chunk = dataList.slice(page * ROWS_PER_PAGE, (page + 1) * ROWS_PER_PAGE);
+                
+                let rowsHtml = '';
+                if (chunk.length === 0) {
+                    rowsHtml = '<tr><td colspan="5" style="text-align:center; padding:10px;">Tidak ada data PAL</td></tr>';
+                } else {
+                    chunk.forEach((item, idx) => {
+                        const nomorUrut = page * ROWS_PER_PAGE + idx + 1;
+                        rowsHtml += `
+                            <tr>
+                                <td class="col-no">${nomorUrut}</td>
+                                <td class="col-desc">${item.description || "-"}</td>
+                                <td class="col-pn">${item.part_number || "-"}</td>
+                                <td class="col-ata">${item.ata || "-"}</td>
+                                <td class="col-auth">${item.related_auth || "-"}</td>
+                            </tr>
+                        `;
+                    });
+                }
 
-            if (activePALData.length === 0) {
-                printTbody.innerHTML = '<tr><td colspan="5" style="text-align:center; padding: 10px;">Tidak ada data PAL</td></tr>';
-            } else {
-                activePALData.forEach((item, index) => {
-                    const row = `
+                const pageDiv = document.createElement('div');
+                pageDiv.className = 'print-page-block';
+                pageDiv.innerHTML = `
+                    <div class="print-header-layout">
+                        <img src="https://lh3.googleusercontent.com/d/1xvTXFYJR1e6Nm8Cl2sktf8s63gq5xj1I" alt="GMFAeroAsia Logo" class="print-header-logo">
+                        <div class="print-header-title">PERSONNEL ABILITY LIST</div>
+                    </div>
+                
+                    <table class="print-person-grid">
                         <tr>
-                            <td class="col-no">${index + 1}</td>
-                            <td class="col-desc">${item.description || "-"}</td>
-                            <td class="col-pn">${item.part_number || "-"}</td>
-                            <td class="col-ata">${item.ata || "-"}</td>
-                            <td class="col-auth">${item.related_auth || "-"}</td>
+                            <td class="lbl">Name</td>
+                            <td style="width: 10px;">:</td>
+                            <td>${selectedPerson.nama || "-"}</td>
                         </tr>
-                    `;
-                    printTbody.innerHTML += row;
-                });
-            }
+                        <tr>
+                            <td class="lbl">Personnel Number</td>
+                            <td>:</td>
+                            <td>${selectedPerson.id || "-"}</td>
+                        </tr>
+                        <tr>
+                            <td class="lbl">Present Title</td>
+                            <td>:</td>
+                            <td>${selectedPerson.jabatan || "-"}</td>
+                        </tr>
+                    </table>
 
-            // Hitung estimasi halaman berdasarkan jumlah baris
-            const rowsCount = activePALData.length;
-            const rowsPerPage = 23; 
-            const totalPages = Math.ceil(rowsCount / rowsPerPage) || 1;
-            document.getElementById('print-page-text').innerText = `Page 1 of ${totalPages}`;
+                    <table class="print-pal-table">
+                        <thead>
+                            <tr>
+                                <th class="col-no">NO</th>
+                                <th class="col-desc">DESCRIPTION</th>
+                                <th class="col-pn">PART NUMBER</th>
+                                <th class="col-ata">ATA</th>
+                                <th class="col-auth">RELATED AUTHORITY</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${rowsHtml}
+                        </tbody>
+                    </table>
+
+                    <table class="print-footer-table">
+                        <tr>
+                            <td class="ft-col-date">
+                                <strong>Date:</strong><br>${tanggalCetak}
+                            </td>
+                            <td class="ft-col-approval">
+                                <strong>Approved by Structure & Cabin Workshop Division Head</strong>
+                                <div style="font-size: 9.5pt; color: #555; margin-top: 15px;">ANDRYAN PUTRA</div>
+                            </td>
+                            <td class="ft-col-page">
+                                Page ${page + 1} of ${totalPages}
+                            </td>
+                        </tr>
+                    </table>
+                    <div class="print-external-form-no">Form No.: GMF/Q-364 R1</div>
+                `;
+
+                printableArea.appendChild(pageDiv);
+            }
 
             setTimeout(() => {
                 window.print();
-            }, 300);
+            }, 200);
         }
 
-        async function prosesLogin(event) {
+        function prosesLogin(event) {
             event.preventDefault();
-            const userIdInput = document.getElementById('userId').value;
-            const userPassInput = document.getElementById('userPassword').value;
-            const btnSubmit = document.getElementById('btn-login-submit');
-
-            btnSubmit.innerText = "Memproses...";
-            btnSubmit.disabled = true;
-
-            try {
-                const response = await fetch(SCRIPT_URL, {
-                    method: "POST",
-                    body: JSON.stringify({
-                        action: "login",
-                        username: userIdInput,
-                        password: userPassInput
-                    })
-                });
-
-                const result = await response.json();
-
-                if (result.status === "success") {
-                    alert("Login berhasil! Selamat datang, " + result.user.username);
-                    localStorage.setItem("userLoggedIn", JSON.stringify(result.user));
-                    aksesTamu(); 
-                } else {
-                    alert(result.message || "ID atau Password salah!");
-                }
-            } catch (error) {
-                console.error("Error login:", error);
-                alert("Gagal terhubung ke server login. Silakan coba lagi.");
-            } finally {
-                btnSubmit.innerText = "Login";
-                btnSubmit.disabled = false;
-            }
+            const id = document.getElementById('userId').value;
+            alert("Login berhasil untuk ID: " + id);
         }
 
         function togglePasswordVisibility() {
