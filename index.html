@@ -839,10 +839,43 @@ function downloadPDF() {
             }, 200);
         }
 
-        function prosesLogin(event) {
+        // KODE BARU (SUDAH TERINTEGRASI KE GOOGLE APPS SCRIPT):
+        async function prosesLogin(event) {
             event.preventDefault();
-            const id = document.getElementById('userId').value;
-            alert("Login berhasil untuk ID: " + id);
+    
+            const idInput = document.getElementById('userId').value;
+            const passwordInput = document.getElementById('userPassword').value;
+
+            try {
+                // Mengirimkan request POST ke URL Web App Apps Script
+                const response = await fetch(SCRIPT_URL, {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "text/plain;charset=utf-8",
+                    },
+                    body: JSON.stringify({
+                        action: "login",
+                        username: idInput,
+                        password: passwordInput
+                    })
+                });
+
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    alert("Login Berhasil! Selamat datang, " + (result.user ? result.user.nama : idInput));
+            
+                    // Langsung alihkan tampilan ke Dashboard
+                    document.getElementById('auth-section').classList.add('hidden');
+                    document.getElementById('view-dashboard').classList.remove('hidden');
+                } else {
+                    // Tampilkan pesan kesalahan dari Google Sheets (misal: Password/ID salah)
+                    alert(result.message || "Login gagal. Periksa kembali ID dan Password Anda.");
+                }
+            } catch (error) {
+                console.error("Error Login:", error);
+                alert("Gagal terhubung ke server login. Pastikan koneksi internet stabil.");
+            }
         }
 
         function togglePasswordVisibility() {
