@@ -235,12 +235,14 @@
         /* Elemen ini dibuat & dihapus otomatis lewat JavaScript saat tombol
            "Download PDF" ditekan. Diposisikan di luar layar (bukan display:none)
            supaya bisa "difoto" oleh html2canvas untuk dijadikan halaman PDF. */
+/* ====== FIXED PDF RENDER CONTAINER ====== */
         #pdf-render-container {
-            position: fixed;
+            position: absolute;
             top: 0;
             left: 0;
-            z-index: 999999;
+            width: 210mm;
             background: #ffffff;
+            z-index: -9999; /* Ditempatkan di latar belakang agar tidak mengganggu UI */
         }
         #pdf-loading-overlay {
             position: fixed;
@@ -621,7 +623,7 @@
            jumlah halaman totalnya pasti akurat, dan tidak ada halaman
            kosong tersisa di akhir.
            ========================================================== */
-        function downloadPDF() {
+function downloadPDF() {
             if (!selectedPerson) return;
 
             const btn = document.querySelector('.btn-download-nav');
@@ -636,6 +638,7 @@
             const opsiTanggal = { day: '2-digit', month: 'short', year: 'numeric' };
             const tanggalCetak = hariIni.toLocaleDateString('en-GB', opsiTanggal);
 
+            // Buat kontainer rendering khusus PDF
             const container = document.createElement('div');
             container.id = 'pdf-render-container';
 
@@ -643,7 +646,6 @@
                 const chunk = dataList.slice(page * ROWS_PER_PAGE_PDF, (page + 1) * ROWS_PER_PAGE_PDF);
                 const pageDiv = document.createElement('div');
                 pageDiv.className = 'pdf-page';
-                if (page > 0) pageDiv.style.pageBreakBefore = 'always';
 
                 let rowsHtml = '';
                 if (chunk.length === 0) {
@@ -708,30 +710,40 @@
 
             const namaFile = `PAL_${(selectedPerson.nama || 'Personil').replace(/\s+/g, '_')}_${selectedPerson.id || ''}.pdf`;
 
+            // Konfigurasi html2pdf
             const opt = {
                 margin: 0,
                 filename: namaFile,
                 image: { type: 'jpeg', quality: 0.98 },
-                html2canvas: { scale: 2, useCORS: true, windowWidth: container.scrollWidth, windowHeight: container.scrollHeight },
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-                pagebreak: { mode: ['css'] }
+                html2canvas: { 
+                    scale: 2, 
+                    useCORS: true, 
+                    scrollY: 0,
+                    scrollX: 0
+                },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(container).save()
-                .then(() => {
-                    document.body.removeChild(container);
-                    document.body.removeChild(overlay);
-                    btn.innerText = teksAsli;
-                    btn.disabled = false;
-                })
-                .catch((err) => {
-                    console.error("Gagal membuat PDF:", err);
-                    document.body.removeChild(container);
-                    document.body.removeChild(overlay);
-                    btn.innerText = teksAsli;
-                    btn.disabled = false;
-                    alert('Gagal membuat PDF. Silakan coba lagi.');
-                });
+            // Scroll layar ke paling atas sebelum generate agar canvas menagkap elemen sempurna
+            window.scrollTo(0, 0);
+
+            setTimeout(() => {
+                html2pdf().set(opt).from(container).save()
+                    .then(() => {
+                        if (document.body.contains(container)) document.body.removeChild(container);
+                        if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                        btn.innerText = teksAsli;
+                        btn.disabled = false;
+                    })
+                    .catch((err) => {
+                        console.error("Gagal membuat PDF:", err);
+                        if (document.body.contains(container)) document.body.removeChild(container);
+                        if (document.body.contains(overlay)) document.body.removeChild(overlay);
+                        btn.innerText = teksAsli;
+                        btn.disabled = false;
+                        alert('Gagal membuat PDF. Silakan coba lagi.');
+                    });
+            }, 300);
         }
 
         function prosesLogin(event) {
